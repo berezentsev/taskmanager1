@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-
+    <a href="/tasks/create" class="btn btn-primary btn-sm">Добавить задачу</a>
     @foreach($tasks as $task)
         <div class="container d-flex justify-content-between border p-3">
             <div>
