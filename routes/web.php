@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'TaskController@index');
 Route::get('/tasks/create', 'TaskController@create');
 Route::get('/tasks/{task}', 'TaskController@show');
+Route::post('/tasks/add', 'TaskController@store');

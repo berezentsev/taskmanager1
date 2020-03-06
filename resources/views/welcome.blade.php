@@ -3,14 +3,14 @@
 @section('content')
     <a href="/tasks/create" class="btn btn-primary btn-sm">Добавить задачу</a>
     @foreach($tasks as $task)
-        <div class="container d-flex justify-content-between border p-3">
+        <div class="container d-flex justify-content-between border p-1">
             <div>
                 @if($task->priority == 1)
-                    <h4><a href="/tasks/{{$task->id}}">{{ $task->title }}</a></h4>
+                    <h6><a href="/tasks/{{$task->id}}">{{ $task->title }}</a></h6>
                 @elseif($task->priority == 2)
-                    <h4 class="text-primary">{{ $task->title }}</h4>
+                    <h6 class="text-primary">{{ $task->title }}</h6>
                 @elseif($task->priority == 3)
-                    <h4 class="text-danger">{{ $task->title }}</h4>
+                    <h6 class="text-danger">{{ $task->title }}</h6>
                 @endif
             </div>
             <div>
