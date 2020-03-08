@@ -36,4 +36,34 @@ class TaskController extends Controller
         $this->taskManager->store($request);
         return redirect('/');
     }
+
+    public function edit(Task $task)
+    {
+        $task = $this->taskManager->forUserAdapter($task);
+        return view('tasks.edit',  ['task'=>$task, 'status'=>Task::STATUS, 'priority'=>Task::PRIORITY]);
+    }
+
+    public function update(Request $request, Task $task)
+    {
+        $this->taskManager->update($request, $task);
+        return redirect('/');
+    }
+
+    public function destroy(Task $task)
+    {
+        $this->taskManager->destroy($task);
+        return redirect('/');
+    }
+
+    public function success(Task $task)
+    {
+        $this->taskManager->success($task);
+        return redirect('/');
+    }
+
+    public function work(Task $task)
+    {
+        $this->taskManager->work($task);
+        return redirect('/');
+    }
 }

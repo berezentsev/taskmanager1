@@ -3,14 +3,14 @@
 
 namespace App\TaskManager\repositories;
 
-
 use App\Task;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
 class TaskRepo implements RepositoryInterface
 {
-    public function store($request)
+    public function store(Request $request)
     {
         $this->validateData($request);
         $uuid = $this->genUuid();
@@ -28,6 +28,42 @@ class TaskRepo implements RepositoryInterface
         ]);
 
         return true;
+    }
+
+    public function update(Request $request, Task $task)
+    {
+        $this->validateData($request);
+        $priority = $this->adapterPriority($request['priority']);
+        $status = $this->adapterStatus($request['status']);
+        $tags = $this->adapterTags($request['tags']);
+        $task->update([
+            'title'=>$request['title'],
+            'priority'=>$priority,
+            'tags'=>$tags,
+            'status'=>$status,
+            'description'=>$request['description']
+        ]);
+
+        return true;
+    }
+
+    public function destroy(Task $task)
+    {
+        return $task->delete();
+    }
+
+    public function success(Task $task)
+    {
+        $task->update([
+            'status'=>0
+        ]);
+    }
+
+    public function work(Task $task)
+    {
+        $task->update([
+            'status'=>1
+        ]);
     }
 
     public function genUuid()
@@ -56,11 +92,11 @@ class TaskRepo implements RepositoryInterface
 
     public function adapterTags(string $tags)
     {
-        $array_tags = explode(',', str_replace(' ', '', $tags));
-        return json_encode($array_tags);
+        $tags = str_replace(' ', '', $tags);
+        return json_encode($tags);
     }
 
-    public function validateData($request)
+    public function validateData(Request $request)
     {
         Validator::make($request->all(),
             [
