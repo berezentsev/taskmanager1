@@ -43,6 +43,7 @@
         </div>
         <div class="form-group-row">
             <button type="submit" class="btn btn-success">Сохранить</button>
+            <a href="/" class="btn btn-secondary">Отмена</a>
         </div>
         @include('layouts.errors')
     </form>

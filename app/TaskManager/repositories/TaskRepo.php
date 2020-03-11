@@ -10,6 +10,11 @@ use Ramsey\Uuid\Uuid;
 
 class TaskRepo implements RepositoryInterface
 {
+    /**
+     * Сохранение новой задачи в БД
+     * @param Request $request
+     * @return bool
+     */
     public function store(Request $request)
     {
         $this->validateData($request);
@@ -19,17 +24,23 @@ class TaskRepo implements RepositoryInterface
         $tags = $this->adapterTags($request['tags']);
 
         Task::create([
-            'uuid'=>$uuid,
-            'title'=>$request['title'],
-            'priority'=>$priority,
-            'tags'=>$tags,
-            'status'=>$status,
-            'description'=>$request['description']
+            'uuid' => $uuid,
+            'title' => $request['title'],
+            'priority' => $priority,
+            'tags' => $tags,
+            'status' => $status,
+            'description' => $request['description']
         ]);
 
         return true;
     }
 
+    /**
+     * Обновление данных задачи в БД
+     * @param Request $request
+     * @param Task $task
+     * @return bool
+     */
     public function update(Request $request, Task $task)
     {
         $this->validateData($request);
@@ -37,40 +48,64 @@ class TaskRepo implements RepositoryInterface
         $status = $this->adapterStatus($request['status']);
         $tags = $this->adapterTags($request['tags']);
         $task->update([
-            'title'=>$request['title'],
-            'priority'=>$priority,
-            'tags'=>$tags,
-            'status'=>$status,
-            'description'=>$request['description']
+            'title' => $request['title'],
+            'priority' => $priority,
+            'tags' => $tags,
+            'status' => $status,
+            'description' => $request['description']
         ]);
 
         return true;
     }
 
+    /**
+     * Удаление задачи
+     * @param Task $task
+     * @return bool|null
+     * @throws \Exception
+     */
     public function destroy(Task $task)
     {
         return $task->delete();
     }
 
+    /**
+     * Помечаюм задачу как выполненную
+     * @param Task $task
+     */
     public function success(Task $task)
     {
         $task->update([
-            'status'=>0
+            'status' => 0
         ]);
     }
 
+    /**
+     * Помечаем задачу как находящуюся в работе
+     * @param Task $task
+     */
     public function work(Task $task)
     {
         $task->update([
-            'status'=>1
+            'status' => 1
         ]);
     }
 
+    /**
+     * Генерируем uuid4
+     * @return string
+     * @throws \Exception
+     */
     public function genUuid()
     {
         return Uuid::uuid4()->toString();
     }
 
+    /**
+     * Адаптируем полученные данные приоритета для сохранения в БД
+     * @param string $priority
+     * @return bool|int
+     */
     public function adapterPriority(string $priority)
     {
         switch ($priority) {
@@ -85,34 +120,48 @@ class TaskRepo implements RepositoryInterface
         }
     }
 
+    /**
+     * Адаптируем полученные данные статуса для сохранения в БД
+     * @param string $status
+     * @return int
+     */
     public function adapterStatus(string $status)
     {
         return ($status == 'В работе') ? 1 : 0;
     }
 
+    /**
+     * Адаптируем полученные данные о тэгах для сохранения в БД
+     * @param string $tags
+     * @return false|string
+     */
     public function adapterTags(string $tags)
     {
-        $tags = str_replace(' ', '', $tags);
+        $tags = explode(',', str_replace(' ', '', $tags));
         return json_encode($tags);
     }
 
+    /**
+     * Валидируем данные формы
+     * @param Request $request
+     */
     public function validateData(Request $request)
     {
         Validator::make($request->all(),
             [
-                'title'=>'required|min:2',
-                'priority'=>'in:'.implode(',', Task::PRIORITY),
-                'status'=>'in:'.implode(',', Task::STATUS)
+                'title' => 'required|min:2',
+                'priority' => 'in:' . implode(',', Task::PRIORITY),
+                'status' => 'in:' . implode(',', Task::STATUS)
             ],
             [
-                'required'=>'Необходимо заполнить поле :attribute',
-                'min'=>'Поле :attribute должно содержать минимум два символа',
-                'in'=>'Некорректное значение поля :attribute'
+                'required' => 'Необходимо заполнить поле :attribute',
+                'min' => 'Поле :attribute должно содержать минимум два символа',
+                'in' => 'Некорректное значение поля :attribute'
             ],
             [
-                'title'=>'"Название задачи"',
-                'priority'=>'"Приоритет задачи"',
-                'status'=>'"Статус задачи"'
+                'title' => '"Название задачи"',
+                'priority' => '"Приоритет задачи"',
+                'status' => '"Статус задачи"'
             ]
         )->validate();
     }

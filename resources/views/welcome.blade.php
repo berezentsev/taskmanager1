@@ -15,6 +15,7 @@
                     <h6><a class="text-danger" href="/tasks/{{$task->id}}">{{$task->title}}</a></h6>
                 @endif
             </div>
+            <div>{{$task->tags}}</div>
             <div>
                 <a href="/tasks/{{$task->id}}/edit" class="btn btn-primary btn-sm">Редактировать</a>
                 <a href="/tasks/{{$task->id}}/success" class="btn btn-success btn-sm">Выполнить</a>
